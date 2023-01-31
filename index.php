@@ -1,24 +1,31 @@
+<?php
+    session_start();
+    $msg = "";
+    if(isset($_GET['msg'])){
+        $msg = $_GET['msg'];
+    }
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Etui Papeterie</title>
+    <title>Deskmate</title>
     <link rel="stylesheet" href="client/utilitaires/bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="client/css/style.css">
     <script src="client/utilitaires/jquery-3.6.3.min.js"></script>
     <script src="client/utilitaires/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
     <script src="client/js/global.js"></script>
 </head>
-<body>
+<body onLoad="initialiser('<?php echo $msg ?>');">
 
 <nav class="navbar navbar-expand-lg border">
     <div class="container">
         <a class="navbar-brand" href="#">
             <img src="client/images/logo.png" class="logo" alt="logo">
           </a>
-        <a class="navbar-brand" href="#"><h3>Papeterie Laura</h3></a>
+        <a class="navbar-brand" href="#"><h3>Deskmate</h3></a>
 
         <form class="d-flex col-md-5" role="search">
             <input class="form-control" type="search" placeholder="Rechercher Produit" aria-label="Search">
@@ -56,14 +63,14 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form class="row g-3" action="serveur/membres/enregistrerMembre.php" method="POST" onSubmit="return validerFormEnreg();">
-                            <div class="col-md-6">
-                                <label for="nom" class="form-label">Nom</label>
-                                <input type="text" class="form-control is-valid" id="nom" name="nom" required>
-                            </div>
+                        <form class="row g-3" action="serveur/membres/enregistrerMembre.php" method="POST" enctype="multipart/form-data" onSubmit="return validerFormEnreg();">
                             <div class="col-md-6">
                                 <label for="prenom" class="form-label">Prénom</label>
                                 <input type="text" class="form-control is-valid" id="prenom" name="prenom" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="nom" class="form-label">Nom</label>
+                                <input type="text" class="form-control is-valid" id="nom" name="nom" required>
                             </div>
                             <div class="col-md-12">
                                 <label for="courriel" class="form-label">Courriel</label>
@@ -85,7 +92,7 @@
 
                             <div class="col-md-12">
                                 <label for="daten" class="form-label">Date de Naissance</label>
-                                <input type="date" class="form-control is-valid" id="daten" name="daten" required>
+                                <input type="date" class="form-control" id="daten" name="daten">
                             </div>
 
                             <div class="form-check">
@@ -99,6 +106,10 @@
                             <label class="form-check-label" for="F">
                                 Femme
                             </label>
+                            </div>
+                            <div class="col-md-12">
+                            <label for="photo" class="form-label">Photo</label>
+                            <input type="file" class="form-control" id="photo" name="photo">
                             </div>
                             <br/>
                             <div class="col-6">
@@ -124,7 +135,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form class="row g-3" action="serveur/membres/connexion.php" method="POST" onSubmit="return validerFormCon();">
+                        <form class="row g-3" action="serveur/connexion/connexion.php" method="POST" onSubmit="return validerFormCon();">
 
                             <div class="col-md-12">
                                 <label for="courrielcon" class="form-label">Courriel</label>
@@ -185,6 +196,17 @@
     © 2023 Copyright:
     <a class="text-reset fw-bold" href="#">Papeterie Laura</a>
   </div>
-
+<!-- Pour les toast de Bootstrap -->
+<div class="toast-container posToast">
+    <div id="toast" class="toast align-items-center text-white bg-danger border-0" data-bs-autohide="false" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <img src="client/images/message.png" width=24 height=24 class="rounded me-2" alt="message">
+            <strong class="me-auto">Messages</strong>
+            <small class="text-muted"></small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div id="textToast" class="toast-body"></div>
+    </div>
+</div>
 </body>
 </html>

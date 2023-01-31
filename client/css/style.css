@@ -9,10 +9,21 @@ ul li{
     height:60px;
 }
 
+.panier{
+    width: 30px;
+    height: 30px;
+}
+
 #msgErrEnregm,#msgErrEnregc{
     color:red;
 }
 
 #msgErrCon{
     color:red;
+}
+
+.posToast {
+    position: absolute;
+    top: 5%;
+    left: 40%;
 }

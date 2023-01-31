@@ -1,40 +1,43 @@
 let validerMotdePass = (pw,tag) =>{
-    let msgErrEnregm = "";
+
+    let msgErrEnreg = "";
     let validem = true;
     if(!/[A-Z]/.test(pw)){
         validem = false;
-        msgErrEnregm += "pas de lettre majuscule<br>";
+        msgErrEnreg += "au moins un lettre majuscule<br>";
     }
     if(!/[a-z]/.test(pw)){
         validem = false;
-        msgErrEnregm += "pas de lettre minuscule<br>";
+        msgErrEnreg += "au moins un lettre minuscule<br>";
     }
     if(!/[0-9]/.test(pw)){
         validem = false;
-        msgErrEnregm += "pas de un chiffre<br>";
+        msgErrEnreg += "au moins un chiffre<br>";
     }
     if(!/[^A-Za-z0-9]/.test(pw)){
         validem = false;
-        msgErrEnregm += "pas de caractere special<br>";
+        msgErrEnreg += "au moins un caractere special<br>";
     }
     if(pw.length < 8){
         validem = false;
-        msgErrEnregm += "au moins 8 caracteres<br>";
-    }
+        msgErrEnreg += "au moins 8 caracteres<br>";
+    }      
     if(pw.length > 10){
         validem = false;
-        msgErrEnregm += "au plus 10 caracteres<br>";
+        msgErrEnreg += "au plus 10 caracteres<br>";
     }
     if(!validem){
-        document.getElementById(tag).innerHTML=msgErrEnregm;
+        document.getElementById(tag).innerHTML = msgErrEnreg;
         setInterval(()=>{
-            document.getElementById(tag).innerHTML="";
+            document.getElementById(tag).innerHTML = "";
         }, 8000);
     }
     return validem;
 }
 
-let comparerMotdePass = (pw,pwc) =>{
+let comparerMotdePass = () =>{
+    let pw = document.getElementById('motdepass').value;
+    let pwc = document.getElementById('motdepassc').value;
     let msgErrEnregc = "";
     let validec = true;
     if(pw != pwc){
@@ -52,11 +55,22 @@ let comparerMotdePass = (pw,pwc) =>{
 
 let validerFormEnreg = () => {
     let pw = document.getElementById('motdepass').value;
-    let pwc = document.getElementById('motdepassc').value;
-    return validerMotdePass(pw,'msgErrEnregm') &&  comparerMotdePass(pw,pwc);
+    return validerMotdePass(pw,'msgErrEnregm') &&  comparerMotdePass();
 }
 
 let validerFormCon = () => {
     let pwcon = document.getElementById('motdepasscon').value;
     return validerMotdePass(pwcon,'msgErrCon');
+}
+
+let initialiser = (message) =>{
+    let textToast = document.getElementById("textToast");
+    let toastElList = [].slice.call(document.querySelectorAll('.toast'))
+    let toastList = toastElList.map(function (toastEl) {
+        return new bootstrap.Toast(toastEl)
+    })
+    if(message.length > 0){
+        textToast.innerHTML = message;
+        toastList[0].show();
+    }
 }

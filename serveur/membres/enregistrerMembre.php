@@ -1,50 +1,59 @@
 <?php
     require_once('../includes/dbcon.inc.php');
+
+    $prenom = $_POST['prenom'];
+    $nom = $_POST['nom'];
+    $courriel = $_POST['courriel'];
+    $motdepass = $_POST['motdepass'];
+    $sexe = $_POST['sexe'];
+    $daten = $_POST['daten'];
+
+    $dossier="photos/";
+    $photo="avatar.jpg";
+    if($_FILES['photo']['tmp_name']!==""){
+        $nomPhoto=sha1($nom.time());
+        //Upload de la photo
+        $tmp = $_FILES['photo']['tmp_name'];
+        $fichier= $_FILES['photo']['name'];
+        $extension=strrchr($fichier,'.');
+        @move_uploaded_file($tmp,$dossier.$nomPhoto.$extension);
+        // Enlever le fichier temporaire chargé
+        @unlink($tmp); //effacer le fichier temporaire
+        $photo=$nomPhoto.$extension;
+    }
+
+    $stmt = $conn->prepare("SELECT courriel FROM membres WHERE courriel=?");
+    $stmt->bind_param("s", $courriel);
+    $stmt->execute();
+    // $stmt->store_result();
+    // $stmt->bind_result($result);
+    // $nrows = $stmt->num_rows;
+    // if($nrows != 0){
+    //     $msg = "Courriel $courriel exist";
+    //     header('Location: ../../index.php?msg='.$msg);
+    //     exit; 
+    // }
+    $result = $stmt->get_result();
+	if($ligne = $result->fetch_object()){
+        mysqli_close($conn);
+        $msg = "Courriel $courriel exist";
+        header('Location: ../../index.php?msg='.$msg);
+        exit;
+    }
+    else{
+        $stmt = $conn->prepare("INSERT INTO membres VALUES (0, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssss", $nom, $prenom, $courriel, $sexe, $daten, $photo);
+        $stmt->execute();
+        $idm = $conn->insert_id;
+        $stmt->close();
+
+        $stmt = $conn->prepare("INSERT INTO connexion VALUES (?, ?, ?, 'M', 'A')");
+        $stmt->bind_param("iss", $idm, $courriel, $motdepass);
+        $stmt->execute();
+        $stmt->close();
+        $conn->close();
+        $msg = "Vous êtes bien enregistré";
+        header('Location: ../../index.php?msg='.$msg);
+        exit; 
+    }
 ?>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exemple</title>
-    <link rel="stylesheet" href="../client/utilitaires/bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../client/css/style.css">
-    <script src="../client/utilitaires/jquery-3.6.3.min.js"></script>
-    <script src="../client/utilitaires/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
-    <script src="../client/js/global.js"></script>
-</head>
-<body>
-    <h2>ENREGISTREMENT D'UN MEMBRE</h2> 
-        <?php
-            $nom = $_POST['nom'];
-            $prenom = $_POST['prenom'];
-            $courriel = $_POST['courriel'];
-            $motdepass = $_POST['motdepass'];
-            $sexe = $_POST['sexe'];
-            $daten = $_POST['daten'];
-
-            $role = "M";
-            $staut = "A";
-
-            $conn = new mysqli($servername, $username, $password, $dbname);
-            if ($conn->connect_error) {
-                die("Connection failed: " . $conn->connect_error);
-            }
-            $stmt = $conn->prepare("INSERT INTO membres VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssss", $nom, $prenom, $courriel, $sexe, $daten);
-            $stmt->execute();
-            $stmt->close();
-
-            $stmt = $conn->prepare("INSERT INTO connexion VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("ssss", $courriel, $motdepass, $role, $staut);
-            $stmt->execute();
-            $stmt->close();
-
-            $conn->close();
-            echo "<h3>Vous êtes bien enregistré</h3>";
-        ?>
-    <br>
-    <a href="../../index.php">Retour à la page d'accueil</a> 
-</body>
-</html>
